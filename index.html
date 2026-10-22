@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Бюджет и Вакансии</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Базовые стили */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f5;
+            display: flex;
+            flex-direction: column; /* Элементы друг под другом */
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #1a2b29;
+        }
+
+        /* Общий контейнер */
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        /* Калькулятор (как на картинке) */
+        .widget {
+            display: flex;
+            flex-direction: row;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 50px;
+            flex: 1.2;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #005e51;
+            margin-bottom: 40px;
+            letter-spacing: -1px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 40px;
+            color: #1a2b29;
+        }
+
+        .input-group {
+            margin-bottom: 35px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5c59;
+        }
+
+        .value-box {
+            background: #f8faf9;
+            border: 1px solid #e0e6e5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            min-width: 120px;
+            text-align: right;
+            color: #005e51;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .value-box::-webkit-outer-spin-button,
+        .value-box::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e0e6e5;
+            border-radius: 2px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #005e51;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -8px;
+            box-shadow: 0 2px 6px rgba(0, 94, 81, 0.3);
+            transition: transform 0.1s;
+        }
+        
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .info-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #f8faf9;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #7a8a87;
+            line-height: 1.4;
+            margin-top: 40px;
+        }
+
+        .result-section {
+            background-color: #005e51;
+            padding: 50px;
+            flex: 1;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-section h3 {
+            font-size: 22px;
+            font-weight: 400;
+            margin-bottom: 40px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+
+        .result-row.highlight {
+            border-bottom: none;
+            padding-top: 25px;
+            padding-bottom: 35px;
+        }
+
+        .result-row.highlight .res-label {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .result-row.highlight .res-value {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .res-label { color: #a6c7c2; }
+        .res-value { font-weight: 600; }
+
+        .status-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #a6c7c2;
+            margin-top: 10px;
+            min-height: 40px;
+        }
+
+        .status-text.good { color: #4ade80; }
+        .status-text.warn { color: #facc15; }
+        .status-text.bad { color: #f87171; }
+
+        /* Стили для блока с вакансиями (под калькулятором) */
+        .jobs-widget {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            padding: 50px;
+            width: 100%;
+        }
+
+        .jobs-widget h3 {
+            font-size: 24px;
+            font-weight: 500;
+            color: #1a2b29;
+            margin-bottom: 15px;
+        }
+
+        .jobs-intro {
+            font-size: 14px;
+            color: #7a8a87;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .job-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #005e51;
+            margin: 30px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e6e5;
+        }
+
+        .job-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            margin-bottom: 10px;
+            background: #f8faf9;
+            border: 1px solid #e0e6e5;
+            border-radius: 8px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .job-item:hover {
+            border-color: #005e51;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .job-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .job-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a2b29;
+        }
+
+        .job-meta {
+            font-size: 13px;
+            color: #7a8a87;
+            display: flex;
+            gap: 10px;
+        }
+
+        .job-tag {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .tag-official { background: #e0f2f1; color: #005e51; }
+        .tag-aggregator { background: #e3f2fd; color: #1565c0; }
+
+        .source-note {
+            font-size: 12px;
+            color: #7a8a87;
+            margin-top: 25px;
+            line-height: 1.5;
+            background: #f8faf9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        /* Адаптивность для телефонов */
+        @media (max-width: 768px) {
+            .widget { flex-direction: column; }
+            .form-section, .result-section, .jobs-widget { padding: 30px; }
+            .job-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+
+    <!-- КАЛЬКУЛЯТОР -->
+    <div class="widget">
+        <div class="form-section">
+            <div class="logo">МОЙ БЮДЖЕТ</div>
+            <h2>Калькулятор дневных трат</h2>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label>Месячный доход</label>
+                    <input type="number" id="income-input" class="value-box" value="50000" oninput="syncInput('income')">
+                </div>
+                <input type="range" id="income-range" min="0" max="200000" step="1000" value="50000" oninput="syncRange('income')">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label>Потрачено сегодня</label>
+                    <input type="number" id="spent-input" class="value-box" value="1500" oninput="syncInput('spent')">
+                </div>
+                <input type="range" id="spent-range" min="0" max="10000" step="100" value="1500" oninput="syncRange('spent')">
+            </div>
+
+            <div class="info-note">
+                <div>ℹ️</div>
+                <div>Расчет основан на правиле: месячный доход делится на 30 дней. Это помогает понять, не выходите ли вы за рамки бюджета в текущий день.</div>
+            </div>
+        </div>
+
+        <div class="result-section">
+            <h3>Сколько можно тратить?</h3>
+
+            <div class="result-row">
+                <span class="res-label">Дневной лимит</span>
+                <span class="res-value" id="res-limit">1 666 ₽</span>
+            </div>
+
+            <div class="result-row highlight">
+                <span class="res-label">Ваши траты</span>
+                <span class="res-value" id="res-spent">1 500 ₽</span>
+            </div>
+
+            <div class="status-text good" id="res-status">
+                Отлично! Вы укладываетесь в дневной лимит.
+            </div>
+        </div>
+    </div>
+
+    <!-- ВАКАНСИИ ДЛЯ ПОДРОСТКОВ -->
+    <div class="jobs-widget">
+        <h3>💼 Вакансии для 15–18 лет</h3>
+        <p class="jobs-intro">
+            Подборка из открытых источников. Ссылки ведут на актуальные страницы поиска и официальные порталы.
+        </p>
+
+        <div class="job-section-title">🔎 Где искать прямо сейчас</div>
+
+        <a class="job-item" href="https://trudvsem.ru/vacancy/search?_query=%D0%BD%D0%B5%D1%81%D0%BE%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%BD%D0%BE%D0%BB%D0%B5%D1%82%D0%BD%D0%B8%D0%B5" target="_blank" rel="noopener">
+            <div class="job-info">
+                <div class="job-title">Работа России — вакансии для несовершеннолетних</div>
+                <div class="job-meta">14–18 лет · Официальное оформление</div>
+            </div>
+            <div class="job-tag tag-official">Госпортал</div>
+        </a>
+
+        <a class="job-item" href="https://hh.ru/search/vacancy?text=%D0%BF%D0%BE%D0%B4%D1%80%D0%BE%D1%81%D1%82%D0%BE%D0%BA&area=113&experience=noExperience&order_by=publication_time&search_period=30" target="_blank" rel="noopener">
+            <div class="job-info">
+                <div class="job-title">hh.ru — вакансии без опыта для подростков</div>
+                <div class="job-meta">Без опыта · Разные города · Свежие</div>
+            </div>
+            <div class="job-tag tag-aggregator">Агрегатор</div>
+        </a>
+
+        <div class="job-section-title">📌 Популярные подработки</div>
+
+        <a class="job-item" href="https://trudvsem.ru/" target="_blank" rel="noopener">
+            <div class="job-info">
+                <div class="job-title">Промоутер / раздача листовок</div>
+                <div class="job-meta">Обычно 14–15 лет · ≈ 2 700–7 000 ₽ за смену</div>
+            </div>
+        </a>
+
+        <a class="job-item" href="https://trudvsem.ru/" target="_blank" rel="noopener">
+            <div class="job-info">
+                <div class="job-title">Курьер (лёгкие грузы)</div>
+                <div class="job-meta">14+ · ≈ 4 000–10 000 ₽ за смену</div>
+            </div>
+        </a>
+
+        <a class="job-item" href="https://trudvsem.ru/" target="_blank" rel="noopener">
+            <div class="job-info">
+                <div class="job-title">Помощник вожатого / аниматор</div>
+                <div class="job-meta">15–18 лет · Летние лагеря, мероприятия</div>
+            </div>
+        </a>
+
+        <p class="source-note">
+            ⚠️ Важно: для 14–15 лет обычно требуется письменное согласие родителя. Рабочий день в каникулы: 14–15 лет — до 4 ч, 15–16 лет — до 5 ч, 16–18 лет — до 7 ч. Если совмещаете с учёбой — не более 2,5–4 ч.
+        </p>
+    </div>
+
+</div>
+
+<script>
+    function syncInput(type) {
+        let inputVal = document.getElementById(type + '-input').value;
+        document.getElementById(type + '-range').value = inputVal || 0;
+        calculate();
+    }
+
+    function syncRange(type) {
+        let rangeVal = document.getElementById(type + '-range').value;
+        document.getElementById(type + '-input').value = rangeVal;
+        calculate();
+    }
+
+    function formatMoney(num) {
+        return new Intl.NumberFormat('ru-RU').format(Math.round(num)) + ' ₽';
+    }
+
+    function calculate() {
+        let income = parseFloat(document.getElementById('income-input').value) || 0;
+        let spent = parseFloat(document.getElementById('spent-input').value) || 0;
+        let limit = income / 30;
+
+        document.getElementById('res-limit').innerText = formatMoney(limit);
+        document.getElementById('res-spent').innerText = formatMoney(spent);
+
+        let statusEl = document.getElementById('res-status');
+        
+        if (spent <= limit) {
+            statusEl.className = 'status-text good';
+            statusEl.innerText = '✅ Отлично! Вы укладываетесь в дневной лимит.';
+        } else if (spent <= limit * 1.5) {
+            statusEl.className = 'status-text warn';
+            statusEl.innerText = '⚠️ Многовато. Вы превысили лимит, но не критично. Постарайтесь завтра потратить меньше.';
+        } else {
+            statusEl.className = 'status-text bad';
+            statusEl.innerText = '🚨 Слишком много! Вы превысили дневную норму более чем в 1.5 раза.';
+        }
+    }
+
+    calculate();
+</script>
+
+</body>
+</html>
